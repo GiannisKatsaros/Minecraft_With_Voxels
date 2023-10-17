@@ -23,7 +23,7 @@ public class Chunk
 
 
     // a 3d array of booleans that represents the voxel map (solid/transparent)
-    private byte[,,] voxelMap = new byte[VoxelData.chunkWidth, VoxelData.chunkHeight, VoxelData.chunkWidth];
+    public byte[,,] voxelMap = new byte[VoxelData.chunkWidth, VoxelData.chunkHeight, VoxelData.chunkWidth];
 
     private World world;
 
