@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -17,6 +18,14 @@ public class Player : MonoBehaviour
 
     [SerializeField] private float playerWidth = 0.15f;
 
+    [SerializeField] private Transform highlightBlock;
+    [SerializeField] private Transform placeBlock;
+    [SerializeField] private float checkIncrement = 0.1f;
+    [SerializeField] private float reach = 8.0f;
+
+    
+    public byte selectedBlockIndex = 1;
+
     private float horizontal;
     private float vertical;
     private float mouseHorizontal;
@@ -30,6 +39,9 @@ public class Player : MonoBehaviour
     {
         cam = GameObject.Find("Main Camera").transform;
         world = GameObject.Find("World").GetComponent<World>();
+
+        Cursor.lockState = CursorLockMode.Locked;
+
     }
 
     private void FixedUpdate()
@@ -45,7 +57,8 @@ public class Player : MonoBehaviour
     }
     private void Update()
     {
-        GetPlayerInput();
+        GetPlayerInputs();
+        PlaceCursorBlocks();
     }
 
     private void Jump()
@@ -83,7 +96,7 @@ public class Player : MonoBehaviour
             velocity.y = CheckUpSpeed(velocity.y);
     }
 
-    private void GetPlayerInput()
+    private void GetPlayerInputs()
     {
         horizontal = Input.GetAxis("Horizontal"); // raw?
         vertical = Input.GetAxis("Vertical");
@@ -97,6 +110,44 @@ public class Player : MonoBehaviour
 
         if (isGrounded && Input.GetButtonDown("Jump"))
             jumpRequest = true;
+
+        if (highlightBlock.gameObject.activeSelf)
+        {
+            // Destroy Block
+            if(Input.GetMouseButtonDown(0))
+                world.GetChunkFromVector3(highlightBlock.position).EditVoxel(highlightBlock.position, 0);
+
+            // Place Block
+            if (Input.GetMouseButtonDown(1))
+                world.GetChunkFromVector3(placeBlock.position).EditVoxel(placeBlock.position, selectedBlockIndex);
+        }
+    }
+
+    private void PlaceCursorBlocks()
+    {
+        float step = checkIncrement;
+        Vector3 lastPos = new();
+
+        while (step < reach)
+        {
+            Vector3 pos = cam.position + (cam.forward * step);
+
+            if (world.CheckForVoxel(pos))
+            {
+                highlightBlock.position = new Vector3(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y), Mathf.FloorToInt(pos.z));
+                placeBlock.position = lastPos;
+
+                highlightBlock.gameObject.SetActive(true);
+                placeBlock.gameObject.SetActive(true);
+
+                return;
+            }
+            lastPos = new Vector3(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y), Mathf.FloorToInt(pos.z));
+            step += checkIncrement;
+        }
+
+        highlightBlock.gameObject.SetActive(false);
+        placeBlock.gameObject.SetActive(false);
     }
 
     private float CheckDownSpeed (float downSpeed)

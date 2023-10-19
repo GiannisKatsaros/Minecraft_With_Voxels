@@ -55,14 +55,14 @@ public class Chunk
 
 
         PopulateVoxelMap();
-        CreateMeshData();
-        CreateMesh();
+        UpdateChunk();
     }
 
 
     // create the mesh data for the chunk
-    private void CreateMeshData()
+    private void UpdateChunk()
     {
+        ClearMeshData();
         // loop through all voxels in the chunk
         for (int y = 0; y < VoxelData.chunkHeight; y++)
         {
@@ -71,10 +71,20 @@ public class Chunk
                 for (int z = 0; z < VoxelData.chunkWidth; z++)
                 {
                     if (world.blockTypes[voxelMap[x, y, z]].isSolid)
-                        AddVoxelDataToChunk(new Vector3(x, y, z));
+                        UpdateMeshData(new Vector3(x, y, z));
                 }
             }
         }
+
+        CreateMesh();
+    }
+
+    private void ClearMeshData()
+    {
+        vertexIndex = 0;
+        vertices.Clear();
+        triangles.Clear();
+        uvs.Clear();
     }
 
     public bool IsActive
@@ -115,6 +125,34 @@ public class Chunk
         return (!(x < 0 || x > VoxelData.chunkWidth - 1 || y < 0 || y > VoxelData.chunkHeight - 1 || z < 0 || z > VoxelData.chunkWidth - 1));
     }
 
+    public void EditVoxel(Vector3 pos, byte newId)
+    {
+        int xCheck = Mathf.FloorToInt(pos.x);
+        int yCheck = Mathf.FloorToInt(pos.y);
+        int zCheck = Mathf.FloorToInt(pos.z);
+
+        xCheck -= Mathf.FloorToInt(chunkObject.transform.position.x);
+        zCheck -= Mathf.FloorToInt(chunkObject.transform.position.z);
+
+        voxelMap[xCheck, yCheck, zCheck] = newId;
+
+        UpdateSurroundingVoxels(xCheck, yCheck, zCheck);
+        UpdateChunk();
+    }
+
+    private void UpdateSurroundingVoxels(int x, int y, int z)
+    {
+        Vector3 thisVoxel = new Vector3(x, y, z);
+
+        for (int p = 0; p < 6; p++)
+        {
+            Vector3 currentVoxel = thisVoxel + VoxelData.faceChecks[p];
+
+            if (!IsVoxelInChunk((int)currentVoxel.x, (int)currentVoxel.y, (int)currentVoxel.z))
+                world.GetChunkFromVector3(thisVoxel + Position).UpdateChunk();
+        }
+    }
+
     private bool CheckVoxel(Vector3 pos)
     {
         int x = Mathf.FloorToInt(pos.x);
@@ -142,7 +180,7 @@ public class Chunk
     }
 
     // add vertexes , triangles, and uvs to the chunk
-    private void AddVoxelDataToChunk(Vector3 pos)
+    private void UpdateMeshData(Vector3 pos)
     {
         // loop through all faces in the voxel cube
         for (int p = 0; p < 6; p++)
