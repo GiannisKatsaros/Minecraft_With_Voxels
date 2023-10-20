@@ -1995,7 +1995,7 @@ MonoBehaviour:
     isSolid: 1
     isTransparent: 0
     icon: {fileID: -902056472, guid: 9c2e6a67484a0f3428f0d7200b7e959c, type: 3}
-    backFaceTexture: 6
+    backFaceTexture: 5
     frontFaceTexture: 5
     topFaceTexture: 6
     bottomFaceTexture: 6
@@ -2041,6 +2041,16 @@ MonoBehaviour:
     bottomFaceTexture: 3
     leftFaceTexture: 3
     rightFaceTexture: 3
+  - blockName: Leaves
+    isSolid: 1
+    isTransparent: 1
+    icon: {fileID: -1340392368, guid: 9c2e6a67484a0f3428f0d7200b7e959c, type: 3}
+    backFaceTexture: 16
+    frontFaceTexture: 16
+    topFaceTexture: 16
+    bottomFaceTexture: 16
+    leftFaceTexture: 16
+    rightFaceTexture: 16
   debugScreen: {fileID: 66649363}
 --- !u!1 &1957499830
 GameObject:
