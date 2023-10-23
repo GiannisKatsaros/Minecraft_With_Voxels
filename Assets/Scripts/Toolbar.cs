@@ -1,34 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Toolbar : MonoBehaviour
 {
-    private World world;
-    [SerializeField] private Player player;
-
-    [SerializeField] private RectTransform highlightBlock;
-    [SerializeField] private ItemSlot[] itemSlots;
-
-    private int slotIndex = 0;
+    public UIItemSlot[] slots;
+    public RectTransform highlight;
+    public Player player;
+    public int slotIndex = 0;
 
     private void Start()
     {
-        world = GameObject.Find("World").GetComponent<World>();
-        
-        foreach (ItemSlot slot in itemSlots)
+        byte index = 1;
+        foreach (UIItemSlot s in slots)
         {
-            slot.icon.sprite = world.blockTypes[slot.itemId].icon;
-            slot.icon.enabled = true;
+            ItemStack stack = new(index, Random.Range(2,65));
+            ItemSlot slot = new(s, stack);
+            index++;
         }
-        player.selectedBlockIndex = itemSlots[slotIndex].itemId;
     }
 
     private void Update()
     {
         float scroll = Input.GetAxis("Mouse ScrollWheel");
-
         if (scroll != 0)
         {
             if (scroll > 0)
@@ -36,21 +30,12 @@ public class Toolbar : MonoBehaviour
             else
                 slotIndex++;
 
-            if (slotIndex > itemSlots.Length - 1)
+            if (slotIndex > slots.Length - 1)
                 slotIndex = 0;
             else if (slotIndex < 0)
-                slotIndex = itemSlots.Length - 1;
+                slotIndex = slots.Length - 1;
 
-            highlightBlock.position = itemSlots[slotIndex].icon.transform.position;
-            player.selectedBlockIndex = itemSlots[slotIndex].itemId;
+            highlight.position = slots[slotIndex].slotIcon.transform.position;
         }
     }
-
-}
-
-[System.Serializable]
-public class ItemSlot
-{
-    public byte itemId;
-    public Image icon;
 }

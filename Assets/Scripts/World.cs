@@ -27,9 +27,10 @@ public class World : MonoBehaviour
 
     private bool applyingModifications = false;
 
-    public GameObject debugScreen;
-
     private Queue<Queue<VoxelMod>> modifications = new();
+
+    private bool _inUi = false;    
+    public GameObject debugScreen;
 
     private void Start()
     {
@@ -212,6 +213,16 @@ public class World : MonoBehaviour
 
     }
 
+    public bool InUI
+    {
+        get { return _inUi; }
+        set
+        {
+            _inUi = value;
+
+        }
+    }
+
     public byte GetVoxel(Vector3 pos)
     {
         int yPos = Mathf.FloorToInt(pos.y);
@@ -227,7 +238,7 @@ public class World : MonoBehaviour
             return 1;
 
         /* Basic Terrain Pass */
-        int terrainHeight = Mathf.FloorToInt(Noise.Get2DPerlin(new Vector2(pos.x, pos.z), 0, biome.terrainScale) * biome.terrainHeight) + biome.solidGroudHeight;
+        int terrainHeight = Mathf.FloorToInt(Noise.Get2DPerlin(new Vector2(pos.x, pos.z), 0, biome.terrainScale) * biome.terrainHeight) + biome.solidGroundHeight;
         byte voxelValue = 0;
 
         if (yPos == terrainHeight)

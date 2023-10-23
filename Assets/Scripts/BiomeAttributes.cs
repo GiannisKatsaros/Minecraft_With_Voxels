@@ -8,7 +8,7 @@ public class BiomeAttributes : ScriptableObject
     public string biomeName;
 
     // below this height, the biome is always solid ground
-    public int solidGroudHeight;
+    public int solidGroundHeight;
 
     // max delta between solid ground height and air
     public int terrainHeight;

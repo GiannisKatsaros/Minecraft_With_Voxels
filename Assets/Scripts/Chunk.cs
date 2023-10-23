@@ -24,7 +24,7 @@ public class Chunk
     // all uvs in the chunk
     private List<Vector2> uvs = new();
 
-    public Vector3 position = new();
+    public Vector3 position;
 
     // a 3d array of booleans that represents the voxel map (solid/transparent)
     public  byte[,,] voxelMap = new byte[VoxelData.chunkWidth, VoxelData.chunkHeight, VoxelData.chunkWidth];
@@ -66,6 +66,24 @@ public class Chunk
 
         Thread myThread = new(new ThreadStart(PopulateVoxelMap));
         myThread.Start();
+    }
+
+    // populate the voxel map with all solid voxels
+    private void PopulateVoxelMap()
+    {
+        // loop through all voxels in the chunk
+        for (int y = 0; y < VoxelData.chunkHeight; y++)
+        {
+            for (int x = 0; x < VoxelData.chunkWidth; x++)
+            {
+                for (int z = 0; z < VoxelData.chunkWidth; z++)
+                {
+                    voxelMap[x, y, z] = world.GetVoxel(new Vector3(x, y, z) + position);
+                }
+            }
+        }
+        _UpdateChunk();
+        isVoxelMapPopulated = true;
     }
 
     public void UpdateChunk()
@@ -133,23 +151,7 @@ public class Chunk
         }
     }
 
-    // populate the voxel map with all solid voxels
-    private void PopulateVoxelMap()
-    {
-        // loop through all voxels in the chunk
-        for (int y = 0; y < VoxelData.chunkHeight; y++)
-        {
-            for (int x = 0; x < VoxelData.chunkWidth; x++)
-            {
-                for (int z = 0; z < VoxelData.chunkWidth; z++)
-                {
-                    voxelMap[x, y, z] = world.GetVoxel(new Vector3(x, y, z) + position);
-                }
-            }
-        }
-        _UpdateChunk();
-        isVoxelMapPopulated = true;
-    }
+    
 
     private bool IsVoxelInChunk(int x, int y, int z)
     {
@@ -180,7 +182,7 @@ public class Chunk
             Vector3 currentVoxel = thisVoxel + VoxelData.faceChecks[p];
 
             if (!IsVoxelInChunk((int)currentVoxel.x, (int)currentVoxel.y, (int)currentVoxel.z))
-                world.GetChunkFromVector3(thisVoxel + position).UpdateChunk();
+                world.GetChunkFromVector3(currentVoxel + position).UpdateChunk();
         }
     }
 
