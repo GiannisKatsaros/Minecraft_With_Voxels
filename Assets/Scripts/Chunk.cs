@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading;
 
 public class Chunk
 {
@@ -23,6 +24,7 @@ public class Chunk
     // all uvs in the chunk
     private List<Vector2> uvs = new();
 
+    public Vector3 position = new();
 
     // a 3d array of booleans that represents the voxel map (solid/transparent)
     public  byte[,,] voxelMap = new byte[VoxelData.chunkWidth, VoxelData.chunkHeight, VoxelData.chunkWidth];
@@ -33,7 +35,9 @@ public class Chunk
 
     private bool _isActive;
 
-    public bool isVoxelMapPopulated = false;
+    private bool isVoxelMapPopulated = false;
+
+    private bool threadLocked = false;
 
     public Chunk (ChunkCoord _coord, World _world, bool generateOnLoad)
     {
@@ -58,19 +62,27 @@ public class Chunk
         chunkObject.transform.SetParent(world.transform);
         chunkObject.transform.position = new Vector3(coord.x * VoxelData.chunkWidth, 0.0f, coord.z * VoxelData.chunkWidth);
         chunkObject.name = "Chunk " + coord.x + ", " + coord.z;
-        
-        PopulateVoxelMap();
-        UpdateChunk();
+        position = chunkObject.transform.position;
+
+        Thread myThread = new(new ThreadStart(PopulateVoxelMap));
+        myThread.Start();
     }
 
-
-    // create the mesh data for the chunk
     public void UpdateChunk()
     {
+        Thread myThread = new(new ThreadStart(_UpdateChunk));
+        myThread.Start();
+    }
+
+    // create the mesh data for the chunk
+    private void _UpdateChunk()
+    {
+        threadLocked = true;
+
         while (modifications.Count > 0)
         {
             VoxelMod v = modifications.Dequeue();
-            Vector3 pos = v.position -= Position;
+            Vector3 pos = v.position -= position;
             voxelMap[(int)pos.x, (int)pos.y, (int)pos.z] = v.id;
         }
 
@@ -87,8 +99,10 @@ public class Chunk
                 }
             }
         }
+        lock (world.chunksToDraw)
+            world.chunksToDraw.Enqueue(this);
 
-        CreateMesh();
+        threadLocked = false;
     }
 
     private void ClearMeshData()
@@ -111,9 +125,12 @@ public class Chunk
         }
     }
 
-    public Vector3 Position
+    public bool IsEditable
     {
-        get { return chunkObject.transform.position; }
+        get
+        {
+            return (isVoxelMapPopulated && !threadLocked);
+        }
     }
 
     // populate the voxel map with all solid voxels
@@ -126,10 +143,11 @@ public class Chunk
             {
                 for (int z = 0; z < VoxelData.chunkWidth; z++)
                 {
-                    voxelMap[x, y, z] = world.GetVoxel(new Vector3(x, y, z) + Position);
+                    voxelMap[x, y, z] = world.GetVoxel(new Vector3(x, y, z) + position);
                 }
             }
         }
+        _UpdateChunk();
         isVoxelMapPopulated = true;
     }
 
@@ -150,7 +168,7 @@ public class Chunk
         voxelMap[xCheck, yCheck, zCheck] = newId;
 
         UpdateSurroundingVoxels(xCheck, yCheck, zCheck);
-        UpdateChunk();
+        _UpdateChunk();
     }
 
     private void UpdateSurroundingVoxels(int x, int y, int z)
@@ -162,7 +180,7 @@ public class Chunk
             Vector3 currentVoxel = thisVoxel + VoxelData.faceChecks[p];
 
             if (!IsVoxelInChunk((int)currentVoxel.x, (int)currentVoxel.y, (int)currentVoxel.z))
-                world.GetChunkFromVector3(thisVoxel + Position).UpdateChunk();
+                world.GetChunkFromVector3(thisVoxel + position).UpdateChunk();
         }
     }
 
@@ -174,7 +192,7 @@ public class Chunk
 
         // if the voxel is not in the chunk, check the world for the voxel
         if (!IsVoxelInChunk(x,y,z))
-            return world.CheckIfVoxelTransparent(pos + Position);
+            return world.CheckIfVoxelTransparent(pos + position);
 
         // if the voxel is in the chunk, check the voxel map for the voxel
         return world.blockTypes[voxelMap[x, y, z]].isTransparent;
@@ -186,8 +204,8 @@ public class Chunk
         int yCheck = Mathf.FloorToInt(pos.y);
         int zCheck = Mathf.FloorToInt(pos.z);
 
-        xCheck -= Mathf.FloorToInt(chunkObject.transform.position.x);
-        zCheck -= Mathf.FloorToInt(chunkObject.transform.position.z);
+        xCheck -= Mathf.FloorToInt(position.x);
+        zCheck -= Mathf.FloorToInt(position.z);
 
         return voxelMap[xCheck, yCheck, zCheck];
     }
@@ -237,7 +255,7 @@ public class Chunk
     }
     
     // create a mesh from the vertices, triangles, and uvs
-    private void CreateMesh()
+    public void CreateMesh()
     {
         // create a new mesh
         Mesh mesh = new()
