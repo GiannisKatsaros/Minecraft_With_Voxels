@@ -32,6 +32,9 @@ public class World : MonoBehaviour
     private bool _inUi = false;    
     public GameObject debugScreen;
 
+    public GameObject creativeInventoryWindow;
+    public GameObject cursorSlot;
+
     private void Start()
     {
         Random.InitState(seed);
@@ -219,7 +222,18 @@ public class World : MonoBehaviour
         set
         {
             _inUi = value;
-
+            if (_inUi)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                creativeInventoryWindow.SetActive(true);
+                cursorSlot.SetActive(true);
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                creativeInventoryWindow.SetActive(false);
+                cursorSlot.SetActive(false);
+            }
         }
     }
 
