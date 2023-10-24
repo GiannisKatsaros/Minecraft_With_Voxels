@@ -7,6 +7,11 @@ public class World : MonoBehaviour
     public int seed;
     public BiomeAttributes biome;
 
+    [Range(0.95f, 0.0f)]
+    public float globalLightLevel;
+    public Color day;
+    public Color night;
+
     public Transform player;
     public Vector3 spawnPosition;
 
@@ -29,7 +34,7 @@ public class World : MonoBehaviour
 
     private Queue<Queue<VoxelMod>> modifications = new();
 
-    private bool _inUi = false;    
+    private bool _inUi = false;
     public GameObject debugScreen;
 
     public GameObject creativeInventoryWindow;
@@ -46,6 +51,9 @@ public class World : MonoBehaviour
     private void Update()
     {
         playerChunkCoord = GetChunkCoordFromVector3(player.position);
+
+        Shader.SetGlobalFloat("GlobalLightLevel", globalLightLevel);
+        Camera.main.backgroundColor = Color.Lerp(day, night, globalLightLevel);
 
         // Only update if player has moved to a new chunk
         if (!playerChunkCoord.Equals(playerLastChunkCoord))
@@ -75,11 +83,11 @@ public class World : MonoBehaviour
         {
             for (int z = (VoxelData.WorldSizeInChunks / 2) - VoxelData.ViewDistanceInChunks; z < (VoxelData.WorldSizeInChunks / 2) + VoxelData.ViewDistanceInChunks; z++)
             {
-                chunks[x,z] = new Chunk(new ChunkCoord(x,z), this, true);
+                chunks[x, z] = new Chunk(new ChunkCoord(x, z), this, true);
                 activeChunks.Add(new ChunkCoord(x, z));
             }
         }
-        
+
 
         player.position = spawnPosition;
     }
@@ -162,8 +170,8 @@ public class World : MonoBehaviour
         for (int x = coord.x - VoxelData.ViewDistanceInChunks; x < coord.x + VoxelData.ViewDistanceInChunks; x++)
         {
             for (int z = coord.z - VoxelData.ViewDistanceInChunks; z < coord.z + VoxelData.ViewDistanceInChunks; z++)
-            {   
-                if (IsChunkInWorld(new ChunkCoord(x,z)))
+            {
+                if (IsChunkInWorld(new ChunkCoord(x, z)))
                 {
                     if (chunks[x, z] == null)
                     {
@@ -184,7 +192,7 @@ public class World : MonoBehaviour
                 }
             }
         }
-        foreach(ChunkCoord c in previouslyActiveChunks)
+        foreach (ChunkCoord c in previouslyActiveChunks)
             chunks[c.x, c.z].IsActive = false;
     }
 
@@ -192,14 +200,14 @@ public class World : MonoBehaviour
     {
         ChunkCoord thisChunk = new ChunkCoord(pos);
 
-        if(!IsVoxelInWorld(pos) || pos.y < 0 || pos.y > VoxelData.chunkHeight)
+        if (!IsVoxelInWorld(pos) || pos.y < 0 || pos.y > VoxelData.chunkHeight)
             return false;
 
         if (chunks[thisChunk.x, thisChunk.z] != null && chunks[thisChunk.x, thisChunk.z].IsEditable)
             return blockTypes[chunks[thisChunk.x, thisChunk.z].GetVoxelFromGlobalVector3(pos)].isSolid;
 
         return blockTypes[GetVoxel(pos)].isSolid;
-        
+
     }
 
     public bool CheckIfVoxelTransparent(Vector3 pos)
@@ -246,7 +254,7 @@ public class World : MonoBehaviour
         // If outside world, return air
         if (!IsVoxelInWorld(pos))
             return 0;
-        
+
         // If bottom block of chunk, return bedrock
         if (yPos == 0)
             return 1;
@@ -267,7 +275,7 @@ public class World : MonoBehaviour
         /* Second Pass */
         if (voxelValue == 2)
         {
-            foreach(Lode lode in biome.lodes)
+            foreach (Lode lode in biome.lodes)
             {
                 if (yPos > lode.minHeight && yPos < lode.maxHeight)
                 {
@@ -298,7 +306,7 @@ public class World : MonoBehaviour
 
     private bool IsVoxelInWorld(Vector3 pos)
     {
-        return( pos.x >= 0 && pos.x < VoxelData.WorldSizeInVoxels && pos.y >= 0 && pos.y < VoxelData.chunkHeight && pos.z >= 0 && pos.z < VoxelData.WorldSizeInVoxels);
+        return (pos.x >= 0 && pos.x < VoxelData.WorldSizeInVoxels && pos.y >= 0 && pos.y < VoxelData.chunkHeight && pos.z >= 0 && pos.z < VoxelData.WorldSizeInVoxels);
     }
 }
 
@@ -356,5 +364,5 @@ public class VoxelMod
     {
         position = _position;
         id = _id;
-    }    
+    }
 }
