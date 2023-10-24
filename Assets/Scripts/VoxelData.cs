@@ -8,6 +8,10 @@ public static class VoxelData
     public static readonly int chunkHeight = 128;
     public static readonly int WorldSizeInChunks = 100;
 
+    // Light data
+    public static float minLightLevel = 0.15f;
+    public static float maxLightLevel = 0.8f;
+    public static float lightFalloff = 0.08f;
     public static int WorldSizeInVoxels
     {
         get { return (WorldSizeInChunks * chunkWidth); }
@@ -64,5 +68,5 @@ public static class VoxelData
         new Vector2(1.0f, 0.0f),
         new Vector2(1.0f, 1.0f)
     };
-    
+
 }
