@@ -23,7 +23,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float checkIncrement = 0.1f;
     [SerializeField] private float reach = 8.0f;
 
-    
+
     public Toolbar toolbar;
 
     private float horizontal;
@@ -52,8 +52,8 @@ public class Player : MonoBehaviour
             if (jumpRequest)
                 Jump();
 
-            transform.Rotate(Vector3.up * mouseHorizontal);
-            cam.Rotate(Vector3.right * -mouseVertical);
+            transform.Rotate(mouseHorizontal * world.settings.mouseSensitivity * Vector3.up);
+            cam.Rotate(-mouseVertical * world.settings.mouseSensitivity * Vector3.right);
 
             transform.Translate(velocity, Space.World);
         }
@@ -123,7 +123,7 @@ public class Player : MonoBehaviour
         if (highlightBlock.gameObject.activeSelf)
         {
             // Destroy Block
-            if(Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0))
                 world.GetChunkFromVector3(highlightBlock.position).EditVoxel(highlightBlock.position, 0);
 
             // Place Block
@@ -165,7 +165,7 @@ public class Player : MonoBehaviour
         placeBlock.gameObject.SetActive(false);
     }
 
-    private float CheckDownSpeed (float downSpeed)
+    private float CheckDownSpeed(float downSpeed)
     {
         if (
             world.CheckForVoxel(new Vector3(transform.position.x - playerWidth, transform.position.y + downSpeed, transform.position.z - playerWidth)) ||
