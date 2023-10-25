@@ -40,7 +40,7 @@ public class Player : MonoBehaviour
         cam = GameObject.Find("Main Camera").transform;
         world = GameObject.Find("World").GetComponent<World>();
 
-        Cursor.lockState = CursorLockMode.Locked;
+        world.InUI = false;
 
     }
 
@@ -107,6 +107,9 @@ public class Player : MonoBehaviour
 
     private void GetPlayerInputs()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+            Application.Quit();
+
         horizontal = Input.GetAxis("Horizontal"); // raw?
         vertical = Input.GetAxis("Vertical");
         mouseHorizontal = Input.GetAxis("Mouse X");
