@@ -10,40 +10,28 @@ public class World : MonoBehaviour
 
     [Header("World Generation Setting")]
     public BiomeAttributes[] biomes;
-
-    [Range(0f, 1f)]
-    public float globalLightLevel;
+    [Range(0f, 1f)] public float globalLightLevel;
     public Color day;
     public Color night;
-
     public Transform player;
     public Vector3 spawnPosition;
-
     public Material material;
     public Material transparentMaterial;
     public BlockType[] blockTypes;
-
     private Chunk[,] chunks = new Chunk[VoxelData.WorldSizeInChunks, VoxelData.WorldSizeInChunks];
-
     private List<ChunkCoord> activeChunks = new();
     public ChunkCoord playerChunkCoord;
     private ChunkCoord playerLastChunkCoord;
-
     private List<ChunkCoord> chunksToCreate = new();
     public List<Chunk> chunksToUpdate = new();
-
     public Queue<Chunk> chunksToDraw = new();
-
     private bool applyingModifications = false;
-
     private Queue<Queue<VoxelMod>> modifications = new();
-
     private bool _inUi = false;
+    public Clouds clouds;
     public GameObject debugScreen;
-
     public GameObject creativeInventoryWindow;
     public GameObject cursorSlot;
-
     private Thread chunkUpdateThread;
     public object chunkUpdateThreadLock = new();
 
@@ -69,7 +57,7 @@ public class World : MonoBehaviour
         }
 
         SetGlobalLightValue();
-        spawnPosition = new Vector3(VoxelData.WorldSizeInChunks * VoxelData.chunkWidth / 2.0f, VoxelData.chunkHeight - 50f, VoxelData.WorldSizeInChunks * VoxelData.chunkWidth / 2.0f);
+        spawnPosition = new Vector3(VoxelData.WorldCenter, VoxelData.chunkHeight - 50f, VoxelData.WorldCenter);
         GenerateWorld();
         playerLastChunkCoord = GetChunkCoordFromVector3(player.position);
     }
@@ -212,6 +200,7 @@ public class World : MonoBehaviour
 
     private void CheckViewDistance()
     {
+        clouds.UpdateClouds();
         ChunkCoord coord = GetChunkCoordFromVector3(player.position);
         playerLastChunkCoord = playerChunkCoord;
 

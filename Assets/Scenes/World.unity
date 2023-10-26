@@ -1290,6 +1290,54 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2096282621963948820, guid: 643c6c5a82273a747bb08863e7da792e, type: 3}
   m_PrefabInstance: {fileID: 1187206561}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1238377174
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1238377178}
+  - component: {fileID: 1238377177}
+  m_Layer: 0
+  m_Name: Clouds
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1238377177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1238377174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b7968ec8620d264499a847fd2bed39f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cloudHeight: 100
+  cloudPattern: {fileID: 2800000, guid: 05a27f41d7ec24f4e96b4cdd941b261c, type: 3}
+  cloudMaterial: {fileID: 2100000, guid: f75965b20ab0da2429c79ca8481c74d8, type: 2}
+  world: {fileID: 1742480166}
+--- !u!4 &1238377178
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1238377174}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 568.1927, y: 304.1566, z: 737.18304}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1240466685
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2037,7 +2085,6 @@ MonoBehaviour:
     enableThreading: 1
     enableAnimatedChunks: 0
     mouseSensitivity: 2
-    seed: 89745
   biomes:
   - {fileID: 11400000, guid: db115eb328efd25458fa784adf2b1ca9, type: 2}
   - {fileID: 11400000, guid: 234164c759834c647b0f36acea375db8, type: 2}
@@ -2204,6 +2251,7 @@ MonoBehaviour:
     bottomFaceTexture: 19
     leftFaceTexture: 18
     rightFaceTexture: 18
+  clouds: {fileID: 1238377177}
   debugScreen: {fileID: 66649363}
   creativeInventoryWindow: {fileID: 620203687}
   cursorSlot: {fileID: 1850401619}
