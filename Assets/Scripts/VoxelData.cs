@@ -35,24 +35,24 @@ public static class VoxelData
     // each Vector3 is a vertex 
     public static readonly Vector3[] voxelVerts = new Vector3[8]
     {
-        new Vector3(0.0f,0.0f,0.0f),
-        new Vector3(1.0f,0.0f,0.0f),
-        new Vector3(1.0f,1.0f,0.0f),
-        new Vector3(0.0f,1.0f,0.0f),
-        new Vector3(0.0f,0.0f,1.0f),
-        new Vector3(1.0f,0.0f,1.0f),
-        new Vector3(1.0f,1.0f,1.0f),
-        new Vector3(0.0f,1.0f,1.0f),
+        new(0.0f,0.0f,0.0f),
+        new(1.0f,0.0f,0.0f),
+        new(1.0f,1.0f,0.0f),
+        new(0.0f,1.0f,0.0f),
+        new(0.0f,0.0f,1.0f),
+        new(1.0f,0.0f,1.0f),
+        new(1.0f,1.0f,1.0f),
+        new(0.0f,1.0f,1.0f),
     };
 
-    public static readonly Vector3[] faceChecks = new Vector3[6]
+    public static readonly Vector3Int[] faceChecks = new Vector3Int[6]
     {
-        new Vector3( 0.0f, 0.0f,-1.0f),   // check back face
-        new Vector3( 0.0f, 0.0f, 1.0f),    // check front face
-        new Vector3( 0.0f, 1.0f, 0.0f),    // check top face
-        new Vector3( 0.0f,-1.0f, 0.0f),   // check bottom face
-        new Vector3(-1.0f, 0.0f, 0.0f),   // check left face
-        new Vector3( 1.0f, 0.0f, 0.0f)     // check right face
+        new( 0, 0,-1),   // check back face
+        new( 0, 0, 1),    // check front face
+        new( 0, 1, 0),    // check top face
+        new( 0,-1, 0),   // check bottom face
+        new(-1, 0, 0),   // check left face
+        new( 1, 0, 0)     // check right face
     };
 
     // lookup list of all faces in a voxel cube
@@ -69,10 +69,10 @@ public static class VoxelData
 
     public static readonly Vector2[] voxelUvs = new Vector2[4]
     {
-        new Vector2(0.0f, 0.0f),
-        new Vector2(0.0f, 1.0f),
-        new Vector2(1.0f, 0.0f),
-        new Vector2(1.0f, 1.0f)
+        new(0.0f, 0.0f),
+        new(0.0f, 1.0f),
+        new(1.0f, 0.0f),
+        new(1.0f, 1.0f)
     };
 
 }

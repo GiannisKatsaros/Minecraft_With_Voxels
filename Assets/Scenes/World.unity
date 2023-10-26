@@ -2083,6 +2083,7 @@ MonoBehaviour:
     version: 0.0.01
     viewDistance: 4
     enableThreading: 1
+    clouds: 2
     enableAnimatedChunks: 0
     mouseSensitivity: 2
   biomes:

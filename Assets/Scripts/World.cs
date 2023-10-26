@@ -459,6 +459,7 @@ public class Settings
     [Header("Performance")]
     public int viewDistance = 8;
     public bool enableThreading = true;
+    public CloudStyle clouds = CloudStyle.Fast;
     public bool enableAnimatedChunks = true;
 
     [Header("Controls")]

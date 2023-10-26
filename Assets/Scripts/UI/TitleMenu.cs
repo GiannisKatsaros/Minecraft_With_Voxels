@@ -21,8 +21,9 @@ public class TitleMenu : MonoBehaviour
     public TextMeshProUGUI mouseTxtSlider;
     public Toggle threadingToggle;
     public Toggle chunkAnimToggle;
-
     private Settings settings;
+    public TMP_Dropdown clouds;
+
     private void Awake()
     {
         if (!File.Exists(Application.dataPath + "/settings.cfg"))
@@ -42,7 +43,7 @@ public class TitleMenu : MonoBehaviour
     public void StartGame()
     {
         VoxelData.seed = Mathf.Abs(seedField.text.GetHashCode()) / VoxelData.WorldSizeInChunks;
-        SceneManager.LoadScene("main", LoadSceneMode.Single);
+        SceneManager.LoadScene("World", LoadSceneMode.Single);
     }
 
     public void EnterSettings()
@@ -53,6 +54,7 @@ public class TitleMenu : MonoBehaviour
         UpdateMouseSlider();
         threadingToggle.isOn = settings.enableThreading;
         chunkAnimToggle.isOn = settings.enableAnimatedChunks;
+        clouds.value = (int)settings.clouds;
 
         mainMenuObject.SetActive(false);
         settingsObject.SetActive(true);
@@ -64,6 +66,7 @@ public class TitleMenu : MonoBehaviour
         settings.mouseSensitivity = mouseSlider.value;
         settings.enableThreading = threadingToggle.isOn;
         settings.enableAnimatedChunks = chunkAnimToggle.isOn;
+        settings.clouds = (CloudStyle)clouds.value;
 
         string jsonExport = JsonUtility.ToJson(settings, true);
         File.WriteAllText(Application.dataPath + "/settings.cfg", jsonExport);
