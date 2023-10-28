@@ -27,8 +27,26 @@ public class DebugScreen : MonoBehaviour
     {
         string debugText = "Debug Screen\n";
         debugText += "FPS: " + frameRate + "\n";
-        debugText += "XYZ: " + (Mathf.FloorToInt(world.player.transform.position.x) - halfWorldSizeInVoxels ) + " / " + Mathf.FloorToInt(world.player.transform.position.y) + " / " + (Mathf.FloorToInt(world.player.transform.position.z) - halfWorldSizeInVoxels ) + "\n";
-        debugText += "Chunk: " + (world.playerChunkCoord.x - halfWorldSizeInChunks ) + " / " + (world.playerChunkCoord.z - halfWorldSizeInChunks) + "\n";
+        debugText += "XYZ: " + (Mathf.FloorToInt(world.player.transform.position.x) - halfWorldSizeInVoxels) + " / " + Mathf.FloorToInt(world.player.transform.position.y) + " / " + (Mathf.FloorToInt(world.player.transform.position.z) - halfWorldSizeInVoxels) + "\n";
+        debugText += "Chunk: " + (world.playerChunkCoord.x - halfWorldSizeInChunks) + " / " + (world.playerChunkCoord.z - halfWorldSizeInChunks) + "\n";
+        string direction = "";
+        switch (world._player.orientation)
+        {
+            case 0:
+                direction = "North";
+                break;
+            case 1:
+                direction = "East";
+                break;
+            case 2:
+                direction = "South";
+                break;
+            case 3:
+                direction = "West";
+                break;
+        }
+
+        debugText += "Facing: " + direction + "\n";
 
         text.text = debugText;
 
@@ -36,7 +54,8 @@ public class DebugScreen : MonoBehaviour
         {
             frameRate = (int)(1.0f / Time.unscaledDeltaTime);
             timer = 0.0f;
-        } else
+        }
+        else
         {
             timer += Time.deltaTime;
         }

@@ -25,7 +25,7 @@ public class Player : MonoBehaviour
 
 
     public Toolbar toolbar;
-
+    public int orientation;
     private float horizontal;
     private float vertical;
     private float mouseHorizontal;
@@ -68,6 +68,17 @@ public class Player : MonoBehaviour
             GetPlayerInputs();
             PlaceCursorBlocks();
         }
+
+        Vector3 XZDirection = transform.forward;
+        XZDirection.y = 0;
+        if (Vector3.Angle(XZDirection, Vector3.forward) <= 45)
+            orientation = 0;
+        else if (Vector3.Angle(XZDirection, Vector3.right) <= 45)
+            orientation = 5;
+        else if (Vector3.Angle(XZDirection, Vector3.back) <= 45)
+            orientation = 1;
+        else if (Vector3.Angle(XZDirection, Vector3.left) <= 45)
+            orientation = 4;
     }
 
     private void Jump()

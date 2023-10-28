@@ -14,6 +14,7 @@ public class World : MonoBehaviour
     public Color day;
     public Color night;
     public Transform player;
+    public Player _player;
     public Vector3 spawnPosition;
     public Material material;
     public Material transparentMaterial;
@@ -51,6 +52,8 @@ public class World : MonoBehaviour
         else _instance = this;
 
         appPath = Application.persistentDataPath;
+
+        _player = player.GetComponent<Player>();
     }
     private void Start()
     {
@@ -187,7 +190,7 @@ public class World : MonoBehaviour
             while (queue.Count > 0)
             {
                 VoxelMod v = queue.Dequeue();
-                worldData.SetVoxel(v.position, v.id);
+                worldData.SetVoxel(v.position, v.id, 1);
 
             }
         }

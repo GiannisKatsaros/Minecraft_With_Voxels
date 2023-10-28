@@ -73,7 +73,7 @@ public class WorldData
         return (pos.x >= 0 && pos.x < VoxelData.WorldSizeInVoxels && pos.y >= 0 && pos.y < VoxelData.chunkHeight && pos.z >= 0 && pos.z < VoxelData.WorldSizeInVoxels);
     }
 
-    public void SetVoxel(Vector3 pos, byte value)
+    public void SetVoxel(Vector3 pos, byte value, int direction)
     {
         if (!IsVoxelInWorld(pos))
             return;
@@ -87,7 +87,7 @@ public class WorldData
         ChunkData chunk = RequestChunk(new Vector2Int(x, z), true);
         Vector3Int voxel = new((int)(pos.x - x), (int)pos.y, (int)(pos.z - z));
 
-        chunk.ModifyVoxel(voxel, value);
+        chunk.ModifyVoxel(voxel, value, direction);
     }
 
     public VoxelState GetVoxel(Vector3 pos)

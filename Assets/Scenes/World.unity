@@ -2196,18 +2196,18 @@ MonoBehaviour:
     bottomFaceTexture: 4
     leftFaceTexture: 4
     rightFaceTexture: 4
-  - blockName: Bricks
+  - blockName: Furnace
     isSolid: 1
     meshData: {fileID: 11400000, guid: 2c53a2b629019004ca7aa73616380914, type: 2}
     renderNeighborFaces: 0
     opacity: 15
     icon: {fileID: 339486198, guid: 9c2e6a67484a0f3428f0d7200b7e959c, type: 3}
-    backFaceTexture: 11
-    frontFaceTexture: 11
-    topFaceTexture: 11
-    bottomFaceTexture: 11
-    leftFaceTexture: 11
-    rightFaceTexture: 11
+    backFaceTexture: 13
+    frontFaceTexture: 12
+    topFaceTexture: 15
+    bottomFaceTexture: 15
+    leftFaceTexture: 13
+    rightFaceTexture: 13
   - blockName: Cobblestone
     isSolid: 1
     meshData: {fileID: 11400000, guid: d3b46be9de2ea97498f9fc72089bb814, type: 2}

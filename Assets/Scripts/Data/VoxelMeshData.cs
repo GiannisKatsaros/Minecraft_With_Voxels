@@ -20,13 +20,25 @@ public class VertData
         position = pos;
         uv = _uv;
     }
+
+    public Vector3 GetRotatedPosition(Vector3 angles)
+    {
+        Vector3 center = new(0.5f, 0.5f, 0.5f);
+        Vector3 direction = position - center;
+        direction = Quaternion.Euler(angles) * direction;
+        return direction + center;
+    }
 }
 
 [System.Serializable]
 public class FaceMeshData
 {
     public string direction;
-    public Vector3 normal;
     public VertData[] vertData;
     public int[] triangles;
+
+    public VertData GetVertData(int index)
+    {
+        return vertData[index];
+    }
 }
