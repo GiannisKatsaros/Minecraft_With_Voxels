@@ -22,8 +22,7 @@ public class World : MonoBehaviour
     private List<ChunkCoord> activeChunks = new();
     public ChunkCoord playerChunkCoord;
     private ChunkCoord playerLastChunkCoord;
-    private List<ChunkCoord> chunksToCreate = new();
-    public List<Chunk> chunksToUpdate = new();
+    private List<Chunk> chunksToUpdate = new();
     public Queue<Chunk> chunksToDraw = new();
     private bool applyingModifications = false;
     private Queue<Queue<VoxelMod>> modifications = new();
@@ -34,10 +33,30 @@ public class World : MonoBehaviour
     public GameObject cursorSlot;
     private Thread chunkUpdateThread;
     public object chunkUpdateThreadLock = new();
+    public object chunkListThreadLock = new();
+    private static World _instance;
+    public static World Instance
+    {
+        get
+        {
+            return _instance;
+        }
+    }
+    public WorldData worldData;
+    public string appPath;
+    private void Awake()
+    {
+        if (_instance != null && _instance != this)
+            Destroy(this.gameObject);
+        else _instance = this;
 
+        appPath = Application.persistentDataPath;
+    }
     private void Start()
     {
         Debug.Log("Generating world using seed: " + VoxelData.seed);
+        worldData = SaveSystem.LoadWorld("Prototype");
+
         // string jsonExport = JsonUtility.ToJson(settings, true);
         // Debug.Log(jsonExport);
         // File.WriteAllText(Application.dataPath + "/settings.cfg", jsonExport);
@@ -50,16 +69,19 @@ public class World : MonoBehaviour
         Shader.SetGlobalFloat("minGlobalLightLevel", VoxelData.minLightLevel);
         Shader.SetGlobalFloat("maxGlobalLightLevel", VoxelData.maxLightLevel);
 
+        LoadWorld();
+
+        SetGlobalLightValue();
+        spawnPosition = new Vector3(VoxelData.WorldCenter, VoxelData.chunkHeight - 50f, VoxelData.WorldCenter);
+        player.position = spawnPosition;
+        CheckViewDistance();
+        playerLastChunkCoord = GetChunkCoordFromVector3(player.position);
+
         if (settings.enableThreading)
         {
             chunkUpdateThread = new Thread(new ThreadStart(ThreadedUpdate));
             chunkUpdateThread.Start();
         }
-
-        SetGlobalLightValue();
-        spawnPosition = new Vector3(VoxelData.WorldCenter, VoxelData.chunkHeight - 50f, VoxelData.WorldCenter);
-        GenerateWorld();
-        playerLastChunkCoord = GetChunkCoordFromVector3(player.position);
     }
 
     public void SetGlobalLightValue()
@@ -76,12 +98,8 @@ public class World : MonoBehaviour
         if (!playerChunkCoord.Equals(playerLastChunkCoord))
             CheckViewDistance();
 
-        if (chunksToCreate.Count > 0)
-            CreateChunk();
-
         if (chunksToDraw.Count > 0)
-            if (chunksToDraw.Peek().IsEditable)
-                chunksToDraw.Dequeue().CreateMesh();
+            chunksToDraw.Dequeue().CreateMesh();
 
         if (!settings.enableThreading)
         {
@@ -94,50 +112,49 @@ public class World : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F3))
             debugScreen.SetActive(!debugScreen.activeSelf);
+
+        if (Input.GetKeyDown(KeyCode.F1))
+            SaveSystem.SaveWorld(worldData);
     }
 
-    private void GenerateWorld()
+    private void LoadWorld()
     {
-        for (int x = (VoxelData.WorldSizeInChunks / 2) - settings.viewDistance; x < (VoxelData.WorldSizeInChunks / 2) + settings.viewDistance; x++)
+        for (int x = (VoxelData.WorldSizeInChunks / 2) - settings.loadDistance; x < (VoxelData.WorldSizeInChunks / 2) + settings.loadDistance; x++)
         {
-            for (int z = (VoxelData.WorldSizeInChunks / 2) - settings.viewDistance; z < (VoxelData.WorldSizeInChunks / 2) + settings.viewDistance; z++)
+            for (int z = (VoxelData.WorldSizeInChunks / 2) - settings.loadDistance; z < (VoxelData.WorldSizeInChunks / 2) + settings.loadDistance; z++)
             {
-                ChunkCoord newChunk = new(x, z);
-                chunks[x, z] = new Chunk(newChunk, this);
-                chunksToCreate.Add(newChunk);
+                worldData.LoadChunk(new Vector2Int(x, z));
             }
         }
-        player.position = spawnPosition;
-        CheckViewDistance();
     }
 
-    private void CreateChunk()
+    public void AddChunkToUpdate(Chunk chunk)
     {
-        ChunkCoord c = chunksToCreate[0];
-        chunksToCreate.RemoveAt(0);
-        chunks[c.x, c.z].Init();
+        AddChunkToUpdate(chunk, false);
+    }
+
+    public void AddChunkToUpdate(Chunk chunk, bool insert)
+    {
+        lock (chunkUpdateThreadLock)
+        {
+            if (!chunksToUpdate.Contains(chunk))
+            {
+                if (insert)
+                    chunksToUpdate.Insert(0, chunk);
+                else
+                    chunksToUpdate.Add(chunk);
+            }
+        }
     }
 
     private void UpdateChunks()
     {
-        bool updated = false;
-        int index = 0;
-
         lock (chunkUpdateThreadLock)
         {
-            while (!updated && index < chunksToUpdate.Count - 1)
-            {
-                if (chunksToUpdate[index].IsEditable)
-                {
-                    chunksToUpdate[index].UpdateChunk();
-                    if (!activeChunks.Contains(chunksToUpdate[index].coord))
-                        activeChunks.Add(chunksToUpdate[index].coord);
-                    chunksToUpdate.RemoveAt(index);
-                    updated = true;
-                }
-                else
-                    index++;
-            }
+            chunksToUpdate[0].UpdateChunk();
+            if (!activeChunks.Contains(chunksToUpdate[0].coord))
+                activeChunks.Add(chunksToUpdate[0].coord);
+            chunksToUpdate.RemoveAt(0);
         }
     }
 
@@ -170,15 +187,8 @@ public class World : MonoBehaviour
             while (queue.Count > 0)
             {
                 VoxelMod v = queue.Dequeue();
-                ChunkCoord c = GetChunkCoordFromVector3(v.position);
+                worldData.SetVoxel(v.position, v.id);
 
-                if (chunks[c.x, c.z] == null)
-                {
-                    chunks[c.x, c.z] = new Chunk(c, this);
-                    chunksToCreate.Add(c);
-                }
-
-                chunks[c.x, c.z].modifications.Enqueue(v);
             }
         }
         applyingModifications = false;
@@ -219,13 +229,9 @@ public class World : MonoBehaviour
                 {
                     if (chunks[x, z] == null)
                     {
-                        chunks[x, z] = new Chunk(thisChunk, this);
-                        chunksToCreate.Add(thisChunk);
+                        chunks[x, z] = new(thisChunk);
                     }
-                    else if (!chunks[x, z].IsActive)
-                    {
-                        chunks[x, z].IsActive = true;
-                    }
+                    chunks[x, z].IsActive = true;
                     activeChunks.Add(thisChunk);
                 }
 
@@ -242,31 +248,13 @@ public class World : MonoBehaviour
 
     public bool CheckForVoxel(Vector3 pos)
     {
-        ChunkCoord thisChunk = new ChunkCoord(pos);
-
-        if (!IsVoxelInWorld(pos) || pos.y < 0 || pos.y > VoxelData.chunkHeight)
-            return false;
-
-        if (chunks[thisChunk.x, thisChunk.z] != null && chunks[thisChunk.x, thisChunk.z].IsEditable)
-            return blockTypes[chunks[thisChunk.x, thisChunk.z].GetVoxelFromGlobalVector3(pos).id].isSolid;
-
-        return blockTypes[GetVoxel(pos)].isSolid;
-
+        VoxelState voxel = worldData.GetVoxel(pos);
+        return blockTypes[voxel.id].isSolid;
     }
 
-    public VoxelState GetVoxelState(Vector3 pos)
-    {
-        ChunkCoord thisChunk = new ChunkCoord(pos);
+    public VoxelState GetVoxelState(Vector3 pos) => worldData.GetVoxel(pos);
+    // return worldData.GetVoxel(pos);
 
-        if (!IsVoxelInWorld(pos) || pos.y < 0 || pos.y > VoxelData.chunkHeight)
-            return null;
-
-        if (chunks[thisChunk.x, thisChunk.z] != null && chunks[thisChunk.x, thisChunk.z].IsEditable)
-            return chunks[thisChunk.x, thisChunk.z].GetVoxelFromGlobalVector3(pos);
-
-        return new VoxelState(GetVoxel(pos));
-
-    }
 
     public bool InUI
     {
@@ -398,7 +386,7 @@ public class BlockType
     public string blockName;
     public bool isSolid;
     public bool renderNeighborFaces;
-    public float transparency;
+    public byte opacity;
     public Sprite icon;
 
     [Header("Texture Values")]
@@ -457,6 +445,7 @@ public class Settings
     public string version = "0.0.01";
 
     [Header("Performance")]
+    public int loadDistance = 16;
     public int viewDistance = 8;
     public bool enableThreading = true;
     public CloudStyle clouds = CloudStyle.Fast;

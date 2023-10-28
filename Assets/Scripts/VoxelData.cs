@@ -11,7 +11,11 @@ public static class VoxelData
     // Light data
     public static float minLightLevel = 0.15f;
     public static float maxLightLevel = 0.8f;
-    public static float lightFalloff = 0.08f;
+
+    public static float unitOfLight
+    {
+        get { return 1f / 16f; }
+    }
 
     public static int seed;
 
@@ -54,6 +58,8 @@ public static class VoxelData
         new(-1, 0, 0),   // check left face
         new( 1, 0, 0)     // check right face
     };
+
+    public static readonly int[] revFaceCheckIndex = new int[6] { 1, 0, 3, 2, 5, 4 };
 
     // lookup list of all faces in a voxel cube
     // each sublist contains the vertexes from voxelVerts that make up a face
