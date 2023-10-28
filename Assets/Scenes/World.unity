@@ -2102,6 +2102,7 @@ MonoBehaviour:
   blockTypes:
   - blockName: Air
     isSolid: 0
+    meshData: {fileID: 11400000, guid: 2c53a2b629019004ca7aa73616380914, type: 2}
     renderNeighborFaces: 1
     opacity: 0
     icon: {fileID: 0}
@@ -2113,6 +2114,7 @@ MonoBehaviour:
     rightFaceTexture: 0
   - blockName: Bedrock
     isSolid: 1
+    meshData: {fileID: 11400000, guid: 2c53a2b629019004ca7aa73616380914, type: 2}
     renderNeighborFaces: 0
     opacity: 15
     icon: {fileID: 1453076502, guid: 9c2e6a67484a0f3428f0d7200b7e959c, type: 3}
@@ -2124,6 +2126,7 @@ MonoBehaviour:
     rightFaceTexture: 9
   - blockName: Stone
     isSolid: 1
+    meshData: {fileID: 11400000, guid: 2c53a2b629019004ca7aa73616380914, type: 2}
     renderNeighborFaces: 0
     opacity: 15
     icon: {fileID: -1553589753, guid: 9c2e6a67484a0f3428f0d7200b7e959c, type: 3}
@@ -2135,6 +2138,7 @@ MonoBehaviour:
     rightFaceTexture: 0
   - blockName: Grass
     isSolid: 1
+    meshData: {fileID: 11400000, guid: 2c53a2b629019004ca7aa73616380914, type: 2}
     renderNeighborFaces: 0
     opacity: 15
     icon: {fileID: 872455101, guid: 9c2e6a67484a0f3428f0d7200b7e959c, type: 3}
@@ -2146,6 +2150,7 @@ MonoBehaviour:
     rightFaceTexture: 2
   - blockName: Sand
     isSolid: 1
+    meshData: {fileID: 11400000, guid: 2c53a2b629019004ca7aa73616380914, type: 2}
     renderNeighborFaces: 0
     opacity: 15
     icon: {fileID: 720368179, guid: 9c2e6a67484a0f3428f0d7200b7e959c, type: 3}
@@ -2157,6 +2162,7 @@ MonoBehaviour:
     rightFaceTexture: 10
   - blockName: Dirt
     isSolid: 1
+    meshData: {fileID: 11400000, guid: 2c53a2b629019004ca7aa73616380914, type: 2}
     renderNeighborFaces: 0
     opacity: 15
     icon: {fileID: 930619281, guid: 9c2e6a67484a0f3428f0d7200b7e959c, type: 3}
@@ -2168,6 +2174,7 @@ MonoBehaviour:
     rightFaceTexture: 1
   - blockName: Wood
     isSolid: 1
+    meshData: {fileID: 11400000, guid: 2c53a2b629019004ca7aa73616380914, type: 2}
     renderNeighborFaces: 0
     opacity: 15
     icon: {fileID: -902056472, guid: 9c2e6a67484a0f3428f0d7200b7e959c, type: 3}
@@ -2179,6 +2186,7 @@ MonoBehaviour:
     rightFaceTexture: 5
   - blockName: Planks
     isSolid: 1
+    meshData: {fileID: 11400000, guid: 2c53a2b629019004ca7aa73616380914, type: 2}
     renderNeighborFaces: 0
     opacity: 15
     icon: {fileID: -582530333, guid: 9c2e6a67484a0f3428f0d7200b7e959c, type: 3}
@@ -2190,6 +2198,7 @@ MonoBehaviour:
     rightFaceTexture: 4
   - blockName: Bricks
     isSolid: 1
+    meshData: {fileID: 11400000, guid: 2c53a2b629019004ca7aa73616380914, type: 2}
     renderNeighborFaces: 0
     opacity: 15
     icon: {fileID: 339486198, guid: 9c2e6a67484a0f3428f0d7200b7e959c, type: 3}
@@ -2201,7 +2210,8 @@ MonoBehaviour:
     rightFaceTexture: 11
   - blockName: Cobblestone
     isSolid: 1
-    renderNeighborFaces: 0
+    meshData: {fileID: 11400000, guid: d3b46be9de2ea97498f9fc72089bb814, type: 2}
+    renderNeighborFaces: 1
     opacity: 15
     icon: {fileID: 409020645, guid: 9c2e6a67484a0f3428f0d7200b7e959c, type: 3}
     backFaceTexture: 8
@@ -2212,6 +2222,7 @@ MonoBehaviour:
     rightFaceTexture: 8
   - blockName: Glass
     isSolid: 1
+    meshData: {fileID: 11400000, guid: 2c53a2b629019004ca7aa73616380914, type: 2}
     renderNeighborFaces: 1
     opacity: 0
     icon: {fileID: -1340392368, guid: 9c2e6a67484a0f3428f0d7200b7e959c, type: 3}
@@ -2223,6 +2234,7 @@ MonoBehaviour:
     rightFaceTexture: 3
   - blockName: Leaves
     isSolid: 1
+    meshData: {fileID: 11400000, guid: 2c53a2b629019004ca7aa73616380914, type: 2}
     renderNeighborFaces: 1
     opacity: 5
     icon: {fileID: -1340392368, guid: 9c2e6a67484a0f3428f0d7200b7e959c, type: 3}
@@ -2234,6 +2246,7 @@ MonoBehaviour:
     rightFaceTexture: 16
   - blockName: Cactus
     isSolid: 1
+    meshData: {fileID: 11400000, guid: 2c53a2b629019004ca7aa73616380914, type: 2}
     renderNeighborFaces: 1
     opacity: 15
     icon: {fileID: -1340392368, guid: 9c2e6a67484a0f3428f0d7200b7e959c, type: 3}
@@ -2245,6 +2258,7 @@ MonoBehaviour:
     rightFaceTexture: 18
   - blockName: Cactus Top
     isSolid: 1
+    meshData: {fileID: 11400000, guid: 2c53a2b629019004ca7aa73616380914, type: 2}
     renderNeighborFaces: 1
     opacity: 15
     icon: {fileID: -1340392368, guid: 9c2e6a67484a0f3428f0d7200b7e959c, type: 3}
